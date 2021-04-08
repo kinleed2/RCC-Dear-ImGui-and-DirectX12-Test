@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\FileChangeNotifier.cpp" />
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\BuildTool.cpp" />
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\Compiler_PlatformWindows.cpp" />
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcher.cpp">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherWin32.cpp">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\Compiler_PlatformPosix.cpp" />
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherLinux.cpp">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherOSX.cpp">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\FileChangeNotifier.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\BuildTool.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\Compiler.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\IFileChangeNotifier.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\ICompilerLogger.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcher.h">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherImpl.h">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherWin32.h">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\FileSystemUtils.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherWin32_AltImpl.h">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\CompileOptions.h" />
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherLinux.h">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\SimpleFileWatcher\FileWatcherOSX.h">
+      <Filter>SimpleFileWatcher</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler\AUArray.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="SimpleFileWatcher">
+      <UniqueIdentifier>{0baef244-e3d1-4bf8-b037-fb5e814ef3d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
