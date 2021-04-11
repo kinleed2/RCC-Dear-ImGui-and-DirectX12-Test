@@ -26,10 +26,17 @@
     <ClCompile Include="RCCppMainLoop.cpp">
       <Filter>RuntimeCompiled</Filter>
     </ClCompile>
-    <ClCompile Include="DeviceResource.cpp">
+    <ClCompile Include="Common\DeviceResources.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="StdioLogSystem.cpp" />
+    <ClCompile Include="Scene\SceneTitle.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\SceneMain.cpp" />
+    <ClCompile Include="Scene\SceneLoad.cpp" />
+    <ClCompile Include="FrameResource\FrameResource.cpp" />
+    <ClCompile Include="Common\Camera.cpp" />
+    <ClCompile Include="Common\d3dUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -53,16 +60,22 @@
     <ClInclude Include="SystemTable.h">
       <Filter>RuntimeCompiled</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceResource.h">
+    <ClInclude Include="Common\DeviceResources.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="d3d12.h">
+    <ClInclude Include="Common\d3dx12.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="StdioLogSystem.h" />
-    <ClInclude Include="StepTimer.h">
+    <ClInclude Include="Common\StepTimer.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="FrameResource\FrameResource.h" />
+    <ClInclude Include="Common\Camera.h" />
+    <ClInclude Include="Common\UploadBuffer.h" />
+    <ClInclude Include="Common\d3dUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -74,5 +87,16 @@
     <Filter Include="Common">
       <UniqueIdentifier>{c8ba7b46-4221-4d55-a3c8-f2f714300a73}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Sky.hlsl" />
+    <FxCompile Include="Shaders\Common.hlsl" />
+    <FxCompile Include="Shaders\LightingUtil.hlsl" />
+    <FxCompile Include="Shaders\DrawNormals.hlsl" />
+    <FxCompile Include="Shaders\ShadowDebug.hlsl" />
+    <FxCompile Include="Shaders\Shadows.hlsl" />
+    <FxCompile Include="Shaders\Ssao.hlsl" />
+    <FxCompile Include="Shaders\SsaoBlur.hlsl" />
+    <FxCompile Include="Shaders\Default.hlsl" />
   </ItemGroup>
 </Project>

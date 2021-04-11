@@ -23,36 +23,10 @@
 #endif
 
 
-#include "d3d12.h"
+#include "d3dx12.h"
 
 namespace DX
 {
-    // Helper class for COM exceptions
-    class com_exception : public std::exception
-    {
-    public:
-        com_exception(HRESULT hr) noexcept : result(hr) {}
-
-        const char* what() const override
-        {
-            static char s_str[64] = {};
-            sprintf_s(s_str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
-            return s_str;
-        }
-
-    private:
-        HRESULT result;
-    };
-
-    // Helper utility converts D3D API failures into exceptions.
-    inline void ThrowIfFailed(HRESULT hr)
-    {
-        if (FAILED(hr))
-        {
-            throw com_exception(hr);
-        }
-    }
-
     // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
     interface IDeviceNotify
     {
@@ -116,7 +90,9 @@ namespace DX
         UINT                        GetBackBufferCount() const noexcept { return m_backBufferCount; }
         DXGI_COLOR_SPACE_TYPE       GetColorSpace() const noexcept { return m_colorSpace; }
         unsigned int                GetDeviceOptions() const noexcept { return m_options; }
-
+        // device resources DLC
+        ID3D12Fence* GetFence() const noexcept { return m_fence.Get(); }
+        
         CD3DX12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() const noexcept
         {
             return CD3DX12_CPU_DESCRIPTOR_HANDLE(

@@ -2,7 +2,7 @@
 // DeviceResources.cpp - A wrapper for the Direct3D 12 device and swapchain
 //
 
-#include "DeviceResource.h"
+#include "DeviceResources.h"
 
 
 #include <DirectXMath.h>
@@ -16,6 +16,8 @@
 #include <stdio.h>
 
 #include <system_error>
+
+#include "d3dUtil.h"
 
 using namespace DirectX;
 using namespace DX;

@@ -1,11 +1,3 @@
-// Dear ImGui: standalone example application for DirectX 12
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-
-// Important: to compile on 32-bit systems, the DirectX12 backend requires code to be compiled with '#define ImTextureID ImU64'.
-// This is because we need ImTextureID to carry a 64-bit value and by default ImTextureID is defined as void*.
-// This define is set in the example .vcxproj file and need to be replicated in your app or by adding it to your imconfig.h file.
-
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
@@ -27,39 +19,23 @@
 #include "StdioLogSystem.h"
 #include "SystemTable.h"
 #include "RCCppMainLoop.h"
-
-#include <DirectXColors.h>
-#include "DeviceResource.h"
-#include "StepTimer.h"
-using namespace DirectX;
+#include "Scene/Scene.h"
+#include "GraphicsMemory.h"
 
 
 // RCC++ Data
-static IRuntimeObjectSystem* g_pRuntimeObjectSystem;
 static StdioLogSystem        g_Logger;
 static SystemTable           g_systemTable;
 
-
-// DX12 Data
-std::unique_ptr<DX::DeviceResources> g_pDeviceResources = NULL;
-ID3D12DescriptorHeap* g_pd3dSrvDescHeap = NULL;
-// Rendering loop timer.
-DX::StepTimer                        g_timer;
-
-// Forward declarations of helper functions
-bool CreateDeviceD3D(HWND hWnd);
-void CleanupDeviceD3D();
+// Graphics
+std::unique_ptr<DirectX::GraphicsMemory> g_graphicsMemory;
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // forward declaractions of RCC++
 bool RCCppInit();
-void RCCppCleanup();
 void RCCppUpdate();
-
-// Game method
-void Clear();
-void Render();
+void RCCppCleanup();
 
 // Main code
 int main(int, char**)
@@ -68,31 +44,39 @@ int main(int, char**)
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("ImGui Example"), NULL };
     ::RegisterClassEx(&wc);
+
+    int width = 1280, height = 720;
+
     HWND hwnd = ::CreateWindow(
         wc.lpszClassName, 
-        _T("Dear ImGui DirectX12 Example"), 
+        _T("RCC++ Dear ImGui and DirectX12 Test"), 
         WS_OVERLAPPEDWINDOW, 
         100, 100, 
-        1280, 800, 
+        width, height,
         NULL, NULL, wc.hInstance, NULL);
 
     if (!hwnd)
         return 1;
 
-    // Show the window
-    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
-    ::UpdateWindow(hwnd);
+    // Initialize RCC++
+    RCCppInit();
 
     // Initialize Direct3D
-    if (!CreateDeviceD3D(hwnd))
+    if (!g_systemTable.pRCCppMainLoopI->CreateDeviceD3D(hwnd, width, height))
     {
         //CleanupDeviceD3D();
         ::UnregisterClass(wc.lpszClassName, wc.hInstance);
         return 1;
     }
 
-    // Initialize RCC++
-    RCCppInit();
+
+    g_graphicsMemory = std::make_unique<DirectX::GraphicsMemory>(g_systemTable.pDeviceResources->GetD3DDevice());
+    g_systemTable.pSceneManager = std::make_unique<SceneManager>();
+    g_systemTable.pSceneManager->ChangeScene(new SceneTitle());
+
+    // Show the window
+    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
+    ::UpdateWindow(hwnd);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -101,18 +85,19 @@ int main(int, char**)
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-    g_systemTable.pImContext = ImGui::GetCurrentContext();
-
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX12_Init(g_pDeviceResources->GetD3DDevice(), 2,
-        DXGI_FORMAT_B8G8R8A8_UNORM, g_pd3dSrvDescHeap,
-        g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-        g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+    ImGui_ImplDX12_Init(g_systemTable.pDeviceResources->GetD3DDevice(), 2,
+        g_systemTable.pDeviceResources->GetBackBufferFormat(), g_systemTable.pd3dSrvDescHeap->Heap(),
+        g_systemTable.pd3dSrvDescHeap->GetFirstCpuHandle(),
+        g_systemTable.pd3dSrvDescHeap->GetFirstGpuHandle());
+
+    g_systemTable.pImContext = ImGui::GetCurrentContext();
+    g_systemTable.ImGui_ImplDX12_RenderDrawData = ImGui_ImplDX12_RenderDrawData;
 
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -128,10 +113,6 @@ int main(int, char**)
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
-
-    // Our state
-
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
     MSG msg;
@@ -158,67 +139,31 @@ int main(int, char**)
         
         g_systemTable.pRCCppMainLoopI->MainLoop();
 
-        g_timer.Tick([&]()
-        {
-            
-        });
-        
-        Render();
+        g_graphicsMemory->Commit(g_systemTable.pDeviceResources->GetCommandQueue());
     }
 
-    g_pDeviceResources->WaitForGpu();
-
     // Cleanup
+    RCCppCleanup();
     ImGui_ImplDX12_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 
-    RCCppCleanup();
+    g_systemTable.pRCCppMainLoopI->CleanupDeviceD3D();
+    g_graphicsMemory.reset();
 
-    CleanupDeviceD3D();
-    ::DestroyWindow(hwnd);
-    ::UnregisterClass(wc.lpszClassName, wc.hInstance);
-
-    return 0;
-}
-
-// Helper functions
-
-bool CreateDeviceD3D(HWND hWnd)
-{
-    g_pDeviceResources = std::make_unique<DX::DeviceResources>();
-
-    g_pDeviceResources->SetWindow(hWnd, 1280, 800);
-    g_pDeviceResources->CreateDeviceResources();
-    g_pDeviceResources->CreateWindowSizeDependentResources();
-
-    {
-        
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 1;
-        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        if (g_pDeviceResources->GetD3DDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap)) != S_OK)
-            return false;
-    }
-
-    return true;
-}
-
-void CleanupDeviceD3D()
-{
-    
-    if (g_pd3dSrvDescHeap) { g_pd3dSrvDescHeap->Release(); g_pd3dSrvDescHeap = NULL; }
-
-
-#ifdef DX12_ENABLE_DEBUG_LAYER
+    #ifdef DX12_ENABLE_DEBUG_LAYER
     IDXGIDebug1* pDebug = NULL;
     if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
     {
         pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
         pDebug->Release();
     }
-#endif
+    #endif
+
+    ::DestroyWindow(hwnd);
+    ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+
+    return 0;
 }
 
 // Forward declare message handler from imgui_impl_win32.cpp
@@ -233,14 +178,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_SIZE:
-        if (g_pDeviceResources != NULL && wParam != SIZE_MINIMIZED)
+        if (g_systemTable.pDeviceResources != NULL && wParam != SIZE_MINIMIZED)
         {
-            //WaitForLastSubmittedFrame();
             ImGui_ImplDX12_InvalidateDeviceObjects();
-            g_pDeviceResources->WindowSizeChanged((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
-            //CleanupRenderTarget();
-            //ResizeSwapChain(hWnd, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
-            //CreateRenderTarget();
+            g_systemTable.pDeviceResources->WindowSizeChanged((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
             ImGui_ImplDX12_CreateDeviceObjects();
         }
         return 0;
@@ -257,86 +198,44 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 bool RCCppInit()
 {
-    g_pRuntimeObjectSystem = new RuntimeObjectSystem;
-    if (!g_pRuntimeObjectSystem->Initialise(&g_Logger, &g_systemTable))
+    g_systemTable.pRuntimeObjectSystem = new RuntimeObjectSystem;
+    g_systemTable.pLogger = &g_Logger;
+    if (!g_systemTable.pRuntimeObjectSystem->Initialise(&g_Logger, &g_systemTable))
     {
-        //delete g_pRuntimeObjectSystem;
-        g_pRuntimeObjectSystem = NULL;
+        delete g_systemTable.pRuntimeObjectSystem;
+        g_systemTable.pRuntimeObjectSystem = NULL;
         return false;
     }
 
     // ensure include directories are set - use location of this file as starting point
-    FileSystemUtils::Path basePath = g_pRuntimeObjectSystem->FindFile(__FILE__).ParentPath();
+    FileSystemUtils::Path basePath = g_systemTable.pRuntimeObjectSystem->FindFile(__FILE__).ParentPath();
     FileSystemUtils::Path imguiIncludeDir = basePath / "imgui";
-    g_pRuntimeObjectSystem->AddIncludeDir(imguiIncludeDir.c_str());
+    g_systemTable.pRuntimeObjectSystem->AddIncludeDir(imguiIncludeDir.c_str());
 
     return true;
 }
 
 void RCCppCleanup()
 {
-    delete g_pRuntimeObjectSystem;
+    delete g_systemTable.pRuntimeObjectSystem;
 }
+
 
 void RCCppUpdate()
 {
     //check status of any compile
-    if (g_pRuntimeObjectSystem->GetIsCompiledComplete())
+    if (g_systemTable.pRuntimeObjectSystem->GetIsCompiledComplete())
     {
         
         // load module when compile complete
-        g_pRuntimeObjectSystem->LoadCompiledModule();
+        g_systemTable.pRuntimeObjectSystem->LoadCompiledModule();
 
     }
 
-    if (!g_pRuntimeObjectSystem->GetIsCompiling())
+    if (!g_systemTable.pRuntimeObjectSystem->GetIsCompiling())
     {
         float deltaTime = 1.0f / ImGui::GetIO().Framerate;
-        g_pRuntimeObjectSystem->GetFileChangeNotifier()->Update(deltaTime);
+        g_systemTable.pRuntimeObjectSystem->GetFileChangeNotifier()->Update(deltaTime);
     }
 }
 
-void Clear()
-{
-    auto commandList = g_pDeviceResources->GetCommandList();
-
-    // Clear the views.
-    auto rtvDescriptor = g_pDeviceResources->GetRenderTargetView();
-    auto dsvDescriptor = g_pDeviceResources->GetDepthStencilView();
-
-    commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, &dsvDescriptor);
-    commandList->ClearRenderTargetView(rtvDescriptor, Colors::CornflowerBlue, 0, nullptr);
-    commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-    // Set the viewport and scissor rect.
-    auto viewport = g_pDeviceResources->GetScreenViewport();
-    auto scissorRect = g_pDeviceResources->GetScissorRect();
-    commandList->RSSetViewports(1, &viewport);
-    commandList->RSSetScissorRects(1, &scissorRect);
-}
-
-void Render()
-{
-
-    // Don't try to render anything before the first Update.
-    if (g_timer.GetFrameCount() == 0)
-    {
-        return;
-    }
-
-    // Prepare the command list to render a new frame.
-    g_pDeviceResources->Prepare();
-    Clear();
-    
-    auto commandList = g_pDeviceResources->GetCommandList();
-    commandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
-
-
-    // TODO: Add your rendering code here.
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
-
-
-    // Show the new frame.
-    g_pDeviceResources->Present();
-
-}
