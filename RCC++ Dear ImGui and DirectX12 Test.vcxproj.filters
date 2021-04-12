@@ -37,7 +37,8 @@
     <ClCompile Include="FrameResource\FrameResource.cpp" />
     <ClCompile Include="Common\Camera.cpp" />
     <ClCompile Include="Common\d3dUtil.cpp" />
-    <ClCompile Include="Game\FBXLoader.cpp" />
+    <ClCompile Include="ModelLoader\FBXLoader.cpp" />
+    <ClCompile Include="ModelLoader\PMDLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -71,13 +72,13 @@
     <ClInclude Include="Common\StepTimer.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="FrameResource\FrameResource.h" />
     <ClInclude Include="Common\Camera.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
     <ClInclude Include="Common\d3dUtil.h" />
-    <ClInclude Include="Game\FBXLoader.h" />
+    <ClInclude Include="ModelLoader\FBXLoader.h" />
+    <ClInclude Include="ModelLoader\PMDLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -100,5 +101,8 @@
     <FxCompile Include="Shaders\Ssao.hlsl" />
     <FxCompile Include="Shaders\SsaoBlur.hlsl" />
     <FxCompile Include="Shaders\Default.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\x64\Debug\libfbxsdk.dll" />
   </ItemGroup>
 </Project>

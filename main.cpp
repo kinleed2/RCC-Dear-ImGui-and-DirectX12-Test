@@ -37,9 +37,12 @@ bool RCCppInit();
 void RCCppUpdate();
 void RCCppCleanup();
 
+#include "ModelLoader/PMDLoader.h"
 // Main code
 int main(int, char**)
 {
+    PMDLoader* pmd = NULL;
+    pmd->Load("Assets/Models/nuoaier/nuoaier.pmx");
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("ImGui Example"), NULL };

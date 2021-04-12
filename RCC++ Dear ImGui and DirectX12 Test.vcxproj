@@ -164,14 +164,14 @@
     <ClInclude Include="Common\d3dx12.h" />
     <ClInclude Include="Common\DeviceResources.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
-    <ClInclude Include="Game\FBXLoader.h" />
+    <ClInclude Include="ModelLoader\FBXLoader.h" />
     <ClInclude Include="FrameResource\FrameResource.h" />
-    <ClInclude Include="Game\Game.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_internal.h" />
     <ClInclude Include="imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="ModelLoader\PMDLoader.h" />
     <ClInclude Include="RCCppMainLoop.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="StdioLogSystem.h" />
@@ -183,7 +183,7 @@
     <ClCompile Include="Common\d3dUtil.cpp" />
     <ClCompile Include="Common\DeviceResources.cpp" />
     <ClCompile Include="FrameResource\FrameResource.cpp" />
-    <ClCompile Include="Game\FBXLoader.cpp" />
+    <ClCompile Include="ModelLoader\FBXLoader.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -192,6 +192,7 @@
     <ClCompile Include="imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModelLoader\PMDLoader.cpp" />
     <ClCompile Include="RCCppMainLoop.cpp" />
     <ClCompile Include="Scene\SceneLoad.cpp" />
     <ClCompile Include="Scene\SceneMain.cpp" />
@@ -266,6 +267,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\x64\Debug\libfbxsdk.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
