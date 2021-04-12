@@ -1,10 +1,11 @@
 #include "Scene.h"
 #include "../SystemTable.h"
 
-#include "GeometricPrimitive.h"
-#include "DDSTextureLoader.h"
-#include "EffectPipelineStateDescription.h"
-#include "CommonStates.h"
+#include "../DirectXTK12/Inc/GeometricPrimitive.h"
+#include "../DirectXTK12/Inc/DDSTextureLoader.h"
+#include "../DirectXTK12/Inc/EffectPipelineStateDescription.h"
+#include "../DirectXTK12/Inc/CommonStates.h"
+
 
 
 using namespace DirectX;
@@ -35,6 +36,7 @@ void SceneMain::Initialize()
     boxMesh->Set(devRes, "box", vertices, indices);
     mGeometries["box"] = std::move(boxMesh);
     
+
     // Load textures
     {
         auto texture = make_unique<Texture>();
@@ -290,6 +292,8 @@ void SceneMain::Initialize()
 void SceneMain::Update(DX::StepTimer const& timer)
 {
 
+
+
     auto fence = g_pSys->pDeviceResources->GetFence();
 
     // Cycle through the circular frame resource array.
@@ -305,6 +309,7 @@ void SceneMain::Update(DX::StepTimer const& timer)
         WaitForSingleObject(eventHandle, INFINITE);
         CloseHandle(eventHandle);
     }
+
 
     // Update camera
     mCamera.UpdateViewMatrix();
@@ -397,6 +402,8 @@ void SceneMain::Update(DX::StepTimer const& timer)
     currPassCB->CopyData(0, mMainPassCB);
     //
 
+    ImGui::Begin("ecc");
+    ImGui::End();
 
     // 
     ImVec2 sizeAppWindow = ImGui::GetIO().DisplaySize;

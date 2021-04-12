@@ -50,7 +50,7 @@ public:
 	void SetLens(float fovY, float aspect, float zn, float zf);
 
 	// Define camera space via LookAt parameters.
-	void LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp);
+	void LookAtFXMVECTOR(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp);
 	void LookAt(const Vector3& pos, const Vector3& target, const Vector3& up);
 
 	// Get View/Proj matrices.

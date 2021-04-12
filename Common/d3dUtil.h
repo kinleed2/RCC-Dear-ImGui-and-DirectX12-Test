@@ -233,8 +233,8 @@ struct MeshGeometry
 
         return ibv;
     }
-
-    void Set(DX::DeviceResources* devRes, const std::string name, const vector<VertexPositionNormalTexture>& vertices,
+    template <typename VertexTypes>
+    void Set(DX::DeviceResources* devRes, const std::string name, const vector<VertexTypes>& vertices,
         const vector<uint16_t>& indices)
     {
         Name = name;
@@ -247,7 +247,7 @@ struct MeshGeometry
 
         TotalIndexCount = indices.size();
 
-        const UINT vbByteSize = (UINT)vertices.size() * sizeof(VertexPositionNormalTexture);
+        const UINT vbByteSize = (UINT)vertices.size() * sizeof(VertexTypes);
         const UINT ibByteSize = (UINT)indices.size() * sizeof(uint16_t);
 
         // Copy data into the upload heap
@@ -295,7 +295,7 @@ struct MeshGeometry
         // Wait for the upload thread to terminate
         finish.wait();
 
-        VertexByteStride = sizeof(VertexPositionNormalTexture);
+        VertexByteStride = sizeof(VertexTypes);
         VertexBufferByteSize = vbByteSize;
         IndexFormat = DXGI_FORMAT_R16_UINT;
         IndexBufferByteSize = ibByteSize;

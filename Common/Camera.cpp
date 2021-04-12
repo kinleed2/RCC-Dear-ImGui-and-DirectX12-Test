@@ -107,7 +107,7 @@ void Camera::SetLens(float fovY, float aspect, float zn, float zf)
 	XMStoreFloat4x4(&mProj, P);
 }
 
-void Camera::LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp)
+void Camera::LookAtFXMVECTOR(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp)
 {
 	XMVECTOR L = XMVector3Normalize(XMVectorSubtract(target, pos));
 	XMVECTOR R = XMVector3Normalize(XMVector3Cross(worldUp, L));
@@ -127,7 +127,7 @@ void Camera::LookAt(const Vector3& pos, const Vector3& target, const Vector3& up
 	Vector3 T = target;
 	Vector3 U = up;
 
-	LookAt(P, T, U);
+	LookAtFXMVECTOR(P, T, U);
 
 	mViewDirty = true;
 }
