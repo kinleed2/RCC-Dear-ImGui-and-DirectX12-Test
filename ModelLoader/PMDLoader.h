@@ -107,16 +107,16 @@ struct PMDBoneDisplayList
 
 enum class PMDRigidBodyShape : uint8_t
 {
-	Sphere,		//!< 0:球
-	Box,		//!< 1:箱
-	Capsule,	//!< 0:カプセル
+	Sphere,		
+	Box,		
+	Capsule,	
 };
 
 enum class PMDRigidBodyOperation : uint8_t
 {
-	Static,				//!< 0:Bone追従
-	Dynamic,			//!< 1:物理演算
-	DynamicAdjustBone	//!< 2:物理演算(Bone位置合わせ)
+	Static,				
+	Dynamic,			
+	DynamicAdjustBone	
 };
 
 struct PMDRigidBodyExt
@@ -124,7 +124,7 @@ struct PMDRigidBodyExt
 	char			m_rigidBodyName[20];
 	uint16_t		m_boneIndex;
 	uint8_t			m_groupIndex;
-	uint16_t		m_groupTarget;		// 衝突グループ（各ビットがグループとの衝突フラグになっている）
+	uint16_t		m_groupTarget;		
 	PMDRigidBodyShape	m_shapeType;
 	float			m_shapeWidth;
 	float			m_shapeHeight;

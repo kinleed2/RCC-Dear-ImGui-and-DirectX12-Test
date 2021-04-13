@@ -25,6 +25,8 @@ void SceneMain::Initialize()
 
     auto devRes = g_pSys->pDeviceResources.get();
 
+    mShadowMap = std::make_unique<TextureRender>(devRes->GetD3DDevice(), 2048, 2048);
+
     // Set Mesh
     std::vector<VertexPositionNormalTexture> vertices;
     std::vector<uint16_t> indices;
@@ -412,7 +414,7 @@ void SceneMain::Update(DX::StepTimer const& timer)
     
     //ImGui::SetNextWindowFocus();
     ImGui::Begin("SceneMain");
-
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     if (ImGui::Button("Change Scene"))
     {
         g_pSys->pDeviceResources->WaitForGpu();
@@ -446,22 +448,10 @@ void SceneMain::Render()
     cmdList->SetGraphicsRootDescriptorTable(3, m_resourceDescriptors->GetFirstGpuHandle());
 
     // Set the viewport and scissor rect.
-    D3D12_VIEWPORT renderWindowView;
-    renderWindowView.TopLeftX = renderWindowPos.x;
-    renderWindowView.TopLeftY = renderWindowPos.y;
-    renderWindowView.Width = renderWindowSize.x;
-    renderWindowView.Height = renderWindowSize.y;
-    renderWindowView.MinDepth = 0.1f;
-    renderWindowView.MaxDepth = 1.0f;
-
-    RECT renderWindowRect;
-    renderWindowRect.left = renderWindowPos.x;
-    renderWindowRect.top = renderWindowPos.y;
-    renderWindowRect.right = renderWindowPos.x + renderWindowSize.x;
-    renderWindowRect.bottom = renderWindowPos.y + +renderWindowSize.y;
-
-    cmdList->RSSetViewports(1, &renderWindowView);
-    cmdList->RSSetScissorRects(1, &renderWindowRect);
+    auto viewport = g_pSys->pDeviceResources->GetScreenViewport();
+    auto scissorRect = g_pSys->pDeviceResources->GetScissorRect();
+    cmdList->RSSetViewports(1, &viewport);
+    cmdList->RSSetScissorRects(1, &scissorRect);
 
     // Render opaque objects
     UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));

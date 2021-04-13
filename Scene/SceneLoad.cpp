@@ -26,11 +26,11 @@ void SceneLoad::Update(DX::StepTimer const& timer)
     if (!nextScene->initialized)
     {
         count += timer.GetElapsedSeconds();
-        ImGui::Text("Loading... time %.2fs", (float)(count));
+        ImGui::Text("Loading... time %.5fs", (float)(count));
     }
     else
     {
-        ImGui::Text("Loading... time %.2fs. SUCCEED", (float)(count));
+        ImGui::Text("Loading... time %.5fs. SUCCEED", (float)(count));
     }
     ImGui::End();
     ImGui::PopStyleColor();

@@ -5,13 +5,14 @@
 #include <wrl/client.h>
 #include <memory>
 
+#include "imgui.h"
+#include "../Common/d3dUtil.h"
 #include "../Common/Camera.h"
 #include "../Common/StepTimer.h"
-
 #include "../FrameResource/FrameResource.h"
-#include "../Common/d3dUtil.h"
+#include "../TextureRender/TextureRender.h"
 #include "../DirectXTK12/Inc/DescriptorHeap.h"
-#include "imgui.h"
+
 
 
 using Microsoft::WRL::ComPtr;
@@ -141,7 +142,7 @@ private:
 
     Camera mCamera;
 
-    //std::unique_ptr<ShadowMap> mShadowMap;
+    std::unique_ptr<TextureRender> mShadowMap;
 
     DirectX::BoundingSphere mSceneBounds;
 
