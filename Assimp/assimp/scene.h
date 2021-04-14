@@ -193,7 +193,7 @@ struct ASSIMP_API aiNode
 /**
  * This flag is set by the validation postprocess-step (aiPostProcess_ValidateDS)
  * if the validation is successful but some issues have been found.
- * This can for example mean that a texture that does not exist is referenced
+ * This can for example mean that a resource that does not exist is referenced
  * by a material or that the bone weights for a vertex don't sum to 1.0 ... .
  * In most cases you should still be able to use the import. This flag could
  * be useful for applications which don't capture Assimp's log output.
@@ -388,9 +388,9 @@ struct aiScene
         return shortFilename;
     }
 
-    //! Returns an embedded texture
+    //! Returns an embedded resource
     const aiTexture* GetEmbeddedTexture(const char* filename) const {
-        // lookup using texture ID (if referenced like: "*1", "*2", etc.)
+        // lookup using resource ID (if referenced like: "*1", "*2", etc.)
         if ('*' == *filename) {
             int index = std::atoi(filename + 1);
             if (0 > index || mNumTextures <= static_cast<unsigned>(index))

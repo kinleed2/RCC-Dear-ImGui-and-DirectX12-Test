@@ -3,8 +3,10 @@
 
 #include "../DirectXTK12/Inc/GeometricPrimitive.h"
 #include "../DirectXTK12/Inc/DDSTextureLoader.h"
+#include "../DirectXTK12/Inc/WICTextureLoader.h"
 #include "../DirectXTK12/Inc/EffectPipelineStateDescription.h"
 #include "../DirectXTK12/Inc/CommonStates.h"
+#include "../ModelLoader/ModelLoader.h"
 
 
 
@@ -22,10 +24,12 @@ void SceneMain::Initialize()
 
     // Set camera
     mCamera.SetPosition({ 0.0f, 2.0f, -15.0f });
-
+    mCamera.SetLens(0.25f * 3.1415926535f,
+        g_pSys->pDeviceResources->GetScreenViewport().Width / g_pSys->pDeviceResources->GetScreenViewport().Height,
+        1.0f, 1000.0f);
     auto devRes = g_pSys->pDeviceResources.get();
 
-    mShadowMap = std::make_unique<TextureRender>(devRes->GetD3DDevice(), 2048, 2048);
+    mShadowMap = std::make_unique<ShadowMap>(devRes->GetD3DDevice(), 2048, 2048);
 
     // Set Mesh
     std::vector<VertexPositionNormalTexture> vertices;
@@ -38,19 +42,33 @@ void SceneMain::Initialize()
     boxMesh->Set(devRes, "box", vertices, indices);
     mGeometries["box"] = std::move(boxMesh);
     
-
+    auto model = make_unique<ModelLoader>();
+    model->Load("Assets/Models/Rumba Dancingout/Rumba Dancingout.fbx");
+    mGeometries["model"] = std::move(model->mGeometries[0]);
     // Load textures
     {
-        auto texture = make_unique<Texture>();
+        
 
         ResourceUploadBatch upload(devRes->GetD3DDevice());
 
         upload.Begin();
 
+        auto water = make_unique<Texture>();
         DX::ThrowIfFailed((CreateDDSTextureFromFile(devRes->GetD3DDevice(),
-            upload, L"Assets\\Textures\\water1.dds", texture->Resource.ReleaseAndGetAddressOf())));
+            upload, L"Assets/Textures/water1.dds", water->Resource.ReleaseAndGetAddressOf())));
+        mTextures["water"] = std::move(water);
 
-        mTextures["water"] = std::move(texture);
+        // model texture
+        auto diffuse = make_unique<Texture>();
+        DX::ThrowIfFailed((CreateWICTextureFromFile(devRes->GetD3DDevice(),
+            upload, model->mMaterialData[0].diffuse.c_str(), diffuse->Resource.ReleaseAndGetAddressOf())));
+        mTextures["diffuse"] = std::move(diffuse);
+
+        auto normal = make_unique<Texture>();
+        DX::ThrowIfFailed((CreateWICTextureFromFile(devRes->GetD3DDevice(),
+            upload, model->mMaterialData[0].normal.c_str(), normal->Resource.ReleaseAndGetAddressOf())));
+        mTextures["normal"] = std::move(normal);
+        //
 
         // Upload the resources to the GPU.
         auto cmdQueue = devRes->GetCommandQueue();
@@ -110,6 +128,9 @@ void SceneMain::Initialize()
         mShaders["standardVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "VS", "vs_5_1");
         mShaders["opaquePS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "PS", "ps_5_1");
 
+        mShaders["VertexPositionNormalTexture_VS"] = d3dUtil::CompileShader(L"Shaders\\VertexPositionNormalTexture.hlsl", nullptr, "VS", "vs_5_1");
+        mShaders["VertexPositionNormalTexture_PS"] = d3dUtil::CompileShader(L"Shaders\\VertexPositionNormalTexture.hlsl", nullptr, "PS", "ps_5_1");
+
         mShaders["shadowVS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", nullptr, "VS", "vs_5_1");
         mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", nullptr, "PS", "ps_5_1");
         mShaders["shadowAlphaTestedPS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", alphaTestDefines, "PS", "ps_5_1");
@@ -146,100 +167,100 @@ void SceneMain::Initialize()
         
         pd.CreatePipelineState(devRes->GetD3DDevice(), 
             mRootSignature.Get(), 
-            { reinterpret_cast<BYTE*>(mShaders["standardVS"]->GetBufferPointer()), mShaders["standardVS"]->GetBufferSize() },
-            { reinterpret_cast<BYTE*>(mShaders["opaquePS"]->GetBufferPointer()), mShaders["opaquePS"]->GetBufferSize() },
-            mPSOs["opaque"].GetAddressOf());
+            { reinterpret_cast<BYTE*>(mShaders["VertexPositionNormalTexture_VS"]->GetBufferPointer()), mShaders["VertexPositionNormalTexture_VS"]->GetBufferSize() },
+            { reinterpret_cast<BYTE*>(mShaders["VertexPositionNormalTexture_PS"]->GetBufferPointer()), mShaders["VertexPositionNormalTexture_PS"]->GetBufferSize() },
+            mPSOs["VertexPositionNormalTexture"].GetAddressOf());
 
-        //ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-        //opaquePsoDesc.InputLayout = VertexPositionNormalTexture::InputLayout;
-        //opaquePsoDesc.pRootSignature = mRootSignature.Get();
-        //opaquePsoDesc.VS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["standardVS"]->GetBufferPointer()),
-        //    mShaders["standardVS"]->GetBufferSize()
-        //};
-        //opaquePsoDesc.PS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["opaquePS"]->GetBufferPointer()),
-        //    mShaders["opaquePS"]->GetBufferSize()
-        //};
-        //opaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        //opaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        //opaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-        //opaquePsoDesc.SampleMask = UINT_MAX; 
-        //opaquePsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        //opaquePsoDesc.NumRenderTargets = 1;
-        //opaquePsoDesc.RTVFormats[0] = devRes->GetBackBufferFormat();
-        //opaquePsoDesc.SampleDesc.Count = 1;
-        //opaquePsoDesc.SampleDesc.Quality = 0;
-        //opaquePsoDesc.DSVFormat = devRes->GetDepthBufferFormat();
-        //ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["opaque"])));
+        ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+        opaquePsoDesc.InputLayout = VertexPositionNormalTexture::InputLayout;
+        opaquePsoDesc.pRootSignature = mRootSignature.Get();
+        opaquePsoDesc.VS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["standardVS"]->GetBufferPointer()),
+            mShaders["standardVS"]->GetBufferSize()
+        };
+        opaquePsoDesc.PS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["opaquePS"]->GetBufferPointer()),
+            mShaders["opaquePS"]->GetBufferSize()
+        };
+        opaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        opaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        opaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        opaquePsoDesc.SampleMask = UINT_MAX; 
+        opaquePsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        opaquePsoDesc.NumRenderTargets = 1;
+        opaquePsoDesc.RTVFormats[0] = devRes->GetBackBufferFormat();
+        opaquePsoDesc.SampleDesc.Count = 1;
+        opaquePsoDesc.SampleDesc.Quality = 0;
+        opaquePsoDesc.DSVFormat = devRes->GetDepthBufferFormat();
+        ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["opaque"])));
 
-        ////
-        //// PSO for shadow map pass.
-        ////
-        //D3D12_GRAPHICS_PIPELINE_STATE_DESC smapPsoDesc = opaquePsoDesc;
-        //smapPsoDesc.RasterizerState.DepthBias = 100000;
-        //smapPsoDesc.RasterizerState.DepthBiasClamp = 0.0f;
-        //smapPsoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
-        //smapPsoDesc.pRootSignature = mRootSignature.Get();
-        //smapPsoDesc.VS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["shadowVS"]->GetBufferPointer()),
-        //    mShaders["shadowVS"]->GetBufferSize()
-        //};
-        //smapPsoDesc.PS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()),
-        //    mShaders["shadowOpaquePS"]->GetBufferSize()
-        //};
+        //
+        // PSO for shadow map pass.
+        //
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC smapPsoDesc = opaquePsoDesc;
+        smapPsoDesc.RasterizerState.DepthBias = 100000;
+        smapPsoDesc.RasterizerState.DepthBiasClamp = 0.0f;
+        smapPsoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
+        smapPsoDesc.pRootSignature = mRootSignature.Get();
+        smapPsoDesc.VS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["shadowVS"]->GetBufferPointer()),
+            mShaders["shadowVS"]->GetBufferSize()
+        };
+        smapPsoDesc.PS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()),
+            mShaders["shadowOpaquePS"]->GetBufferSize()
+        };
 
-        //// Shadow map pass does not have a render target.
-        //smapPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
-        //smapPsoDesc.NumRenderTargets = 0;
-        //ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&smapPsoDesc, IID_PPV_ARGS(&mPSOs["shadow_opaque"])));
+        // Shadow map pass does not have a render target.
+        smapPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+        smapPsoDesc.NumRenderTargets = 0;
+        ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&smapPsoDesc, IID_PPV_ARGS(&mPSOs["shadow_opaque"])));
 
-        ////
-        //// PSO for debug layer.
-        ////
-        //D3D12_GRAPHICS_PIPELINE_STATE_DESC debugPsoDesc = opaquePsoDesc;
-        //debugPsoDesc.pRootSignature = mRootSignature.Get();
-        //debugPsoDesc.VS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["debugVS"]->GetBufferPointer()),
-        //    mShaders["debugVS"]->GetBufferSize()
-        //};
-        //debugPsoDesc.PS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["debugPS"]->GetBufferPointer()),
-        //    mShaders["debugPS"]->GetBufferSize()
-        //};
-        //ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&debugPsoDesc, IID_PPV_ARGS(&mPSOs["debug"])));
+        //
+        // PSO for debug layer.
+        //
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC debugPsoDesc = opaquePsoDesc;
+        debugPsoDesc.pRootSignature = mRootSignature.Get();
+        debugPsoDesc.VS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["debugVS"]->GetBufferPointer()),
+            mShaders["debugVS"]->GetBufferSize()
+        };
+        debugPsoDesc.PS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["debugPS"]->GetBufferPointer()),
+            mShaders["debugPS"]->GetBufferSize()
+        };
+        ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&debugPsoDesc, IID_PPV_ARGS(&mPSOs["debug"])));
 
-        ////
-        //// PSO for sky.
-        ////
-        //D3D12_GRAPHICS_PIPELINE_STATE_DESC skyPsoDesc = opaquePsoDesc;
+        //
+        // PSO for sky.
+        //
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC skyPsoDesc = opaquePsoDesc;
 
-        //// The camera is inside the sky sphere, so just turn off culling.
-        //skyPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+        // The camera is inside the sky sphere, so just turn off culling.
+        skyPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 
-        //// Make sure the depth function is LESS_EQUAL and not just LESS.  
-        //// Otherwise, the normalized depth values at z = 1 (NDC) will 
-        //// fail the depth test if the depth buffer was cleared to 1.
-        //skyPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-        //skyPsoDesc.pRootSignature = mRootSignature.Get();
-        //skyPsoDesc.VS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["skyVS"]->GetBufferPointer()),
-        //    mShaders["skyVS"]->GetBufferSize()
-        //};
-        //skyPsoDesc.PS =
-        //{
-        //    reinterpret_cast<BYTE*>(mShaders["skyPS"]->GetBufferPointer()),
-        //    mShaders["skyPS"]->GetBufferSize()
-        //};
-        //ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&skyPsoDesc, IID_PPV_ARGS(&mPSOs["sky"])));
+        // Make sure the depth function is LESS_EQUAL and not just LESS.  
+        // Otherwise, the normalized depth values at z = 1 (NDC) will 
+        // fail the depth test if the depth buffer was cleared to 1.
+        skyPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        skyPsoDesc.pRootSignature = mRootSignature.Get();
+        skyPsoDesc.VS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["skyVS"]->GetBufferPointer()),
+            mShaders["skyVS"]->GetBufferSize()
+        };
+        skyPsoDesc.PS =
+        {
+            reinterpret_cast<BYTE*>(mShaders["skyPS"]->GetBufferPointer()),
+            mShaders["skyPS"]->GetBufferSize()
+        };
+        ThrowIfFailed(devRes->GetD3DDevice()->CreateGraphicsPipelineState(&skyPsoDesc, IID_PPV_ARGS(&mPSOs["sky"])));
     }
 
     // Create resource descriptors 
@@ -259,19 +280,40 @@ void SceneMain::Initialize()
         //srvDesc.Texture2D.MipLevels = 1;
         srvDesc.Texture2D.MipLevels = mTextures["water"]->Resource->GetDesc().MipLevels;
         srvDesc.Format = mTextures["water"]->Resource->GetDesc().Format;
-
         devRes->GetD3DDevice()->CreateShaderResourceView(
             mTextures["water"]->Resource.Get(), 
             &srvDesc,
             m_resourceDescriptors->GetCpuHandle(mTexturesHeapIndex.size()));
-
         mTexturesHeapIndex["water"] = mTexturesHeapIndex.size();
+
+        srvDesc.Texture2D.MipLevels = mTextures["diffuse"]->Resource->GetDesc().MipLevels;
+        srvDesc.Format = mTextures["diffuse"]->Resource->GetDesc().Format;
+        devRes->GetD3DDevice()->CreateShaderResourceView(
+            mTextures["diffuse"]->Resource.Get(),
+            &srvDesc,
+            m_resourceDescriptors->GetCpuHandle(mTexturesHeapIndex.size()));
+        mTexturesHeapIndex["diffuse"] = mTexturesHeapIndex.size();
+
+        srvDesc.Texture2D.MipLevels = mTextures["normal"]->Resource->GetDesc().MipLevels;
+        srvDesc.Format = mTextures["normal"]->Resource->GetDesc().Format;
+        devRes->GetD3DDevice()->CreateShaderResourceView(
+            mTextures["normal"]->Resource.Get(),
+            &srvDesc,
+            m_resourceDescriptors->GetCpuHandle(mTexturesHeapIndex.size()));
+        mTexturesHeapIndex["normal"] = mTexturesHeapIndex.size();
+
     }
     // Create material
     {
-        auto material = make_unique<Material>();
-        material->Set("water", mMaterials.size(), mTexturesHeapIndex["water"]);
-        mMaterials["water"] = std::move(material);  
+        auto waterMat = make_unique<Material>();
+        waterMat->SetDiffuse("water", mMaterials.size(), mTexturesHeapIndex["water"]);
+        mMaterials["water"] = std::move(waterMat);
+
+        auto modelMat = make_unique<Material>();
+        modelMat->SetDiffuseNormal("model", mMaterials.size(),
+            mTexturesHeapIndex["diffuse"], mTexturesHeapIndex["normal"]);
+        mMaterials["model"] = std::move(modelMat);
+        
     }
     // Set render item
     {
@@ -279,6 +321,10 @@ void SceneMain::Initialize()
         boxRenderItem->Set(mAllRitems.size(), mGeometries["box"].get(), mMaterials["water"].get());
         mRitemLayer[(int)RenderLayer::Opaque].push_back(boxRenderItem.get());
         mAllRitems.push_back(std::move(boxRenderItem));
+        auto modelRenderItem = make_unique<RenderItem>();
+        modelRenderItem->Set(mAllRitems.size(), mGeometries["model"].get(), mMaterials["model"].get());
+        mRitemLayer[(int)RenderLayer::Opaque].push_back(modelRenderItem.get());
+        mAllRitems.push_back(std::move(modelRenderItem));
     }
     // Create frame resources
     for (int i = 0; i < gNumFrameResources; ++i)
@@ -293,8 +339,6 @@ void SceneMain::Initialize()
 
 void SceneMain::Update(DX::StepTimer const& timer)
 {
-
-
 
     auto fence = g_pSys->pDeviceResources->GetFence();
 
@@ -322,6 +366,10 @@ void SceneMain::Update(DX::StepTimer const& timer)
         DirectX::XMConvertToRadians(angle * 10.0f),
         0.0f);
 
+    Matrix scale = Matrix::CreateScale(.05f, .05f, .05f);
+    Matrix pos = Matrix::CreateTranslation(0.0f, -2.0f, 0.0f);
+    mAllRitems[0]->world = rot;
+    mAllRitems[1]->world = scale * pos;
     // Update objects
     auto currObjectCB = mCurrFrameResource->ObjectCB.get();
     for (auto& e : mAllRitems)
@@ -330,8 +378,7 @@ void SceneMain::Update(DX::StepTimer const& timer)
         // This needs to be tracked per frame resource.
         if (e->NumFramesDirty > 0)
         {
-            e->world = rot;
-
+            
             ObjectConstants objConstants;
             objConstants.world = e->world;
             objConstants.texTransform = e->TexTransform;
@@ -404,28 +451,19 @@ void SceneMain::Update(DX::StepTimer const& timer)
     currPassCB->CopyData(0, mMainPassCB);
     //
 
-    ImGui::Begin("ecc");
-    ImGui::End();
 
-    // 
-    ImVec2 sizeAppWindow = ImGui::GetIO().DisplaySize;
-    ImGui::SetNextWindowPos(ImVec2(sizeAppWindow.x * 0.3f , 0), ImGuiCond_Appearing);
-    ImGui::SetNextWindowSize(ImVec2(sizeAppWindow.x * 0.6f, sizeAppWindow.y * 0.6f), ImGuiCond_Always);
-    
-    //ImGui::SetNextWindowFocus();
+    // Set UI
     ImGui::Begin("SceneMain");
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     if (ImGui::Button("Change Scene"))
     {
         g_pSys->pDeviceResources->WaitForGpu();
         g_pSys->pSceneManager->ChangeScene(new SceneLoad(new SceneTitle()));
     }
-    renderWindowPos = ImGui::GetWindowPos();
-    renderWindowSize = ImGui::GetWindowSize();
-    ImGui::Text("Window size :%.0f %.0f", renderWindowSize.x, renderWindowSize.y);
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
     
-    mCamera.SetLens(0.25f * 3.1415926535f, renderWindowSize.x / renderWindowSize.y, 1.0f, 1000.0f);
+    
 }
 
 void SceneMain::Render()
@@ -458,7 +496,7 @@ void SceneMain::Render()
 
     auto objectCB = mCurrFrameResource->ObjectCB->Resource();
 
-    cmdList->SetPipelineState(mPSOs["opaque"].Get());
+    cmdList->SetPipelineState(mPSOs["VertexPositionNormalTexture"].Get());
 
     // For each render item...
     for (size_t i = 0; i < mRitemLayer[(int)RenderLayer::Opaque].size(); ++i)

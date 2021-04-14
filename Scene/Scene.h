@@ -10,9 +10,8 @@
 #include "../Common/Camera.h"
 #include "../Common/StepTimer.h"
 #include "../FrameResource/FrameResource.h"
-#include "../TextureRender/TextureRender.h"
 #include "../DirectXTK12/Inc/DescriptorHeap.h"
-
+#include "../TextureRender/ShadowMap.h"
 
 
 using Microsoft::WRL::ComPtr;
@@ -142,7 +141,7 @@ private:
 
     Camera mCamera;
 
-    std::unique_ptr<TextureRender> mShadowMap;
+    std::unique_ptr<ShadowMap> mShadowMap;
 
     DirectX::BoundingSphere mSceneBounds;
 
@@ -162,6 +161,4 @@ private:
     Vector3 mRotatedLightDirections[3];
 
 
-    ImVec2 renderWindowSize;
-    ImVec2 renderWindowPos;
 };

@@ -69,13 +69,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)build\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\intermediates\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)FBXSDK\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Assimp;$(SolutionDir)FBXSDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)FBXSDK\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\intermediates\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)FBXSDK\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Assimp;$(SolutionDir)FBXSDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)FBXSDK\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,13 +94,13 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)Assimp\Include;$(SolutionDir)FBXSDK\Include;DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Assimp;$(SolutionDir)FBXSDK\Include;DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ImTextureID=ImU64;_UNICODE;UNICODE;WIN32;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;RuntimeCompiler.lib;RuntimeObjectSystem.lib;DirectXTK12.lib;libfbxsdk.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;RuntimeCompiler.lib;RuntimeObjectSystem.lib;DirectXTK12.lib;libfbxsdk.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Assimp\Libs;$(SolutionDir)FBXSDK\Libs;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -109,13 +109,13 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)Assimp\Include;$(SolutionDir)FBXSDK\Include;DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Assimp;$(SolutionDir)FBXSDK\Include;DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ImTextureID=ImU64;_UNICODE;UNICODE;WIN32;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;RuntimeCompiler.lib;RuntimeObjectSystem.lib;DirectXTK12.lib;libfbxsdk.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;RuntimeCompiler.lib;RuntimeObjectSystem.lib;DirectXTK12.lib;libfbxsdk.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Assimp\Libs;$(SolutionDir)FBXSDK\Libs;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -126,7 +126,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)FBXSDK\Include;$(SolutionDir)Assimp\Include;DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ImTextureID=ImU64;_UNICODE;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
@@ -145,7 +145,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)FBXSDK\Include;$(SolutionDir)Assimp\Include;DirectXTK12/Inc;imgui;imgui\backends;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem;RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ImTextureID=ImU64;_UNICODE;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
@@ -179,7 +179,9 @@
     <ClInclude Include="Common\StepTimer.h" />
     <ClInclude Include="SystemTable.h" />
     <ClInclude Include="TextureRender\CubeRenderTarget.h" />
+    <ClInclude Include="TextureRender\ShadowMap.h" />
     <ClInclude Include="TextureRender\TextureRender.h" />
+    <ClInclude Include="Wave\Waves.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\Camera.cpp" />
@@ -204,7 +206,9 @@
     <ClCompile Include="Scene\SceneTitle.cpp" />
     <ClCompile Include="StdioLogSystem.cpp" />
     <ClCompile Include="TextureRender\CubeRenderTarget.cpp" />
+    <ClCompile Include="TextureRender\ShadowMap.cpp" />
     <ClCompile Include="TextureRender\TextureRender.cpp" />
+    <ClCompile Include="Wave\Waves.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="DirectXTK12\DirectXTK_Desktop_2019_Win10.vcxproj">
@@ -273,6 +277,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <None Include="Shaders\VertexPositionNormalTexture.hlsl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="build\x64\Debug\libfbxsdk.dll" />

@@ -330,11 +330,20 @@ struct Material
     float Roughness = .25f;
     Matrix MatTransform = Matrix::Identity;
 
-    void Set(const string& name, int matCBIndex, int diffuseSrvHeapIndex)
+    void SetDiffuse(const string& name, int matCBIndex, int diffuseSrvHeapIndex)
     {
         this->Name = name;
         this->MatCBIndex = matCBIndex;
         this->DiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+    }
+
+    void SetDiffuseNormal(const string& name, int matCBIndex, 
+        int diffuseSrvHeapIndex, int normalSrvHeapIndex)
+    {
+        this->Name = name;
+        this->MatCBIndex = matCBIndex;
+        this->DiffuseSrvHeapIndex = diffuseSrvHeapIndex;
+        this->NormalSrvHeapIndex = normalSrvHeapIndex;
     }
 };
 

@@ -97,7 +97,7 @@ extern "C" {
 #endif // !! AI_MAX_NUMBER_OF_COLOR_SETS
 
 /** @def AI_MAX_NUMBER_OF_TEXTURECOORDS
- *  Supported number of texture coord sets (UV(W) channels) per mesh */
+ *  Supported number of resource coord sets (UV(W) channels) per mesh */
 
 #ifndef AI_MAX_NUMBER_OF_TEXTURECOORDS
 #   define AI_MAX_NUMBER_OF_TEXTURECOORDS 0x8
@@ -518,7 +518,7 @@ struct aiAnimMesh
     }
 
     /** Check whether the anim mesh overrides a particular
-     * set of texture coordinates on his host mesh.
+     * set of resource coordinates on his host mesh.
      *  @param pIndex 0<index<AI_MAX_NUMBER_OF_TEXTURECOORDS */
     bool HasTextureCoords( unsigned int pIndex) const   {
         return pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS ? false : mTextureCoords[pIndex] != nullptr;
@@ -556,7 +556,7 @@ enum aiMorphingMethod
 * referencing the vertices. In addition there might be a series of bones, each
 * of them addressing a number of vertices with a certain weight. Vertex data
 * is presented in channels with each channel containing a single per-vertex
-* information such as a set of texture coords or a normal vector.
+* information such as a set of resource coords or a normal vector.
 * If a data pointer is non-null, the corresponding data stream is present.
 * From C++-programs you can also use the comfort functions Has*() to
 * test for the presence of various data streams.
@@ -619,7 +619,7 @@ struct aiMesh
 
     /** Vertex tangents.
     * The tangent of a vertex points in the direction of the positive
-    * X texture axis. The array contains normalized vectors, NULL if
+    * X resource axis. The array contains normalized vectors, NULL if
     * not present. The array is mNumVertices in size. A mesh consisting
     * of points and lines only may not have normal vectors. Meshes with
     * mixed primitive types (i.e. lines and triangles) may have
@@ -633,7 +633,7 @@ struct aiMesh
 
     /** Vertex bitangents.
     * The bitangent of a vertex points in the direction of the positive
-    * Y texture axis. The array contains normalized vectors, NULL if not
+    * Y resource axis. The array contains normalized vectors, NULL if not
     * present. The array is mNumVertices in size.
     * @note If the mesh contains tangents, it automatically also contains
     * bitangents.
@@ -647,7 +647,7 @@ struct aiMesh
     */
     C_STRUCT aiColor4D* mColors[AI_MAX_NUMBER_OF_COLOR_SETS];
 
-    /** Vertex texture coords, also known as UV channels.
+    /** Vertex resource coords, also known as UV channels.
     * A mesh may contain 0 to AI_MAX_NUMBER_OF_TEXTURECOORDS per
     * vertex. NULL if not present. The array is mNumVertices in size.
     */
@@ -815,8 +815,8 @@ struct aiMesh
         }
     }
 
-    //! Check whether the mesh contains a texture coordinate set
-    //! \param pIndex Index of the texture coordinates set
+    //! Check whether the mesh contains a resource coordinate set
+    //! \param pIndex Index of the resource coordinates set
     bool HasTextureCoords( unsigned int pIndex) const {
         if (pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS) {
             return false;

@@ -411,7 +411,7 @@ enum aiComponent
      * Use aiComponent_COLORn(N) to specify the N'th set */
     aiComponent_COLORS = 0x8,
 
-    /** ALL texture UV sets
+    /** ALL resource UV sets
      * aiComponent_TEXCOORDn(N) to specify the N'th set  */
     aiComponent_TEXCOORDS = 0x10,
 
@@ -500,7 +500,7 @@ enum aiComponent
 
 // ---------------------------------------------------------------------------
 /** @brief Input parameter to the #aiProcess_FindInvalidData step:
- *  Set to true to ignore texture coordinates. This may be useful if you have
+ *  Set to true to ignore resource coordinates. This may be useful if you have
  *  to assign different kind of textures like one for the summer or one for the winter.
  */
 #define AI_CONFIG_PP_FID_IGNORE_TEXTURECOORDS        \
@@ -650,7 +650,7 @@ enum aiComponent
     "IMPORT_FBX_OPTIMIZE_EMPTY_ANIMATION_CURVES"
 
 // ---------------------------------------------------------------------------
-/** @brief Set whether the fbx importer will use the legacy embedded texture naming.
+/** @brief Set whether the fbx importer will use the legacy embedded resource naming.
  *
  * The default value is false (0)
  * Property type: bool
@@ -733,7 +733,7 @@ enum aiComponent
 
 // ---------------------------------------------------------------------------
 /** @brief Configures the terragen import plugin to compute uv's for
- *  terrains, if not given. Furthermore a default texture is assigned.
+ *  terrains, if not given. Furthermore a default resource is assigned.
  *
  * UV coordinates for terrains are so simple to compute that you'll usually
  * want to compute them on your own, if you need them. This option is intended
@@ -870,9 +870,9 @@ enum aiComponent
     "IMPORT_OGRE_MATERIAL_FILE"
 
 // ---------------------------------------------------------------------------
-/** @brief Ogre Importer detect the texture usage from its filename.
+/** @brief Ogre Importer detect the resource usage from its filename.
  *
- * Ogre material texture units do not define texture type, the textures usage
+ * Ogre material resource units do not define resource type, the textures usage
  * depends on the used shader or Ogre's fixed pipeline. If this config property
  * is true Assimp will try to detect the type from the textures filename postfix:
  * _n, _nrm, _nrml, _normal, _normals and _normalmap for normal map, _s, _spec,
@@ -880,7 +880,7 @@ enum aiComponent
  * and _occlusion for light map, _disp and _displacement for displacement map.
  * The matching is case insensitive. Post fix is taken between the last
  * underscore and the last period.
- * Default behavior is to detect type from lower cased texture unit name by
+ * Default behavior is to detect type from lower cased resource unit name by
  * matching against: normalmap, specularmap, lightmap and displacementmap.
  * For both cases if no match is found aiTextureType_DIFFUSE is used.
  * <br>

@@ -1,14 +1,20 @@
+//***************************************************************************************
+// ShadowMap.h by Frank Luna (C) 2015 All Rights Reserved.
+//***************************************************************************************
+
 #pragma once
+
 #include "../Common/d3dUtil.h"
 
-class TextureRender
+class ShadowMap
 {
-	TextureRender(ID3D12Device* device,
-		UINT width, UINT height, bool isShadowMap = false);
+public:
+	ShadowMap(ID3D12Device* device,
+		UINT width, UINT height);
 
-	TextureRender(const TextureRender& rhs) = delete;
-	TextureRender& operator=(const TextureRender& rhs) = delete;
-	~TextureRender() = default;
+	ShadowMap(const ShadowMap& rhs) = delete;
+	ShadowMap& operator=(const ShadowMap& rhs) = delete;
+	~ShadowMap() = default;
 
 	UINT Width()const;
 	UINT Height()const;
@@ -45,7 +51,6 @@ private:
 	CD3DX12_GPU_DESCRIPTOR_HANDLE mhGpuSrv;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE mhCpuDsv;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> mTexture = nullptr;
-
-	bool mShadowMapFlag = false;
+	Microsoft::WRL::ComPtr<ID3D12Resource> mShadowMap = nullptr;
 };
+

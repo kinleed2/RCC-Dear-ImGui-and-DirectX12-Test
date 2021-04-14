@@ -1,28 +1,35 @@
 #pragma once
 #include "../Common/d3dUtil.h"
 
-#include "Importer.hpp"
+#include "../Assimp/assimp/Importer.hpp"
+#include "../Assimp/assimp/scene.h"
+#include "../Assimp/assimp/postprocess.h"
 
 
 struct ModelMaterialData
 {
 	string materialname;
 	string meshname;
-	string diffuse;
-	string normal;
+	wstring diffuse;
+	wstring normal;
 };
 
 class ModelLoader
 {
 public:
-	ModelLoader();
-	~ModelLoader();
+	ModelLoader() {};
+	~ModelLoader() {};
 	void Load(const std::string& filename);
 	std::vector<std::unique_ptr<MeshGeometry>> mGeometries;
 	std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
 	std::vector<ModelMaterialData> mMaterialData;
 
+	string mDirectory;
 private:
+	void processNode(aiNode* node, const aiScene* scene);
+	std::unique_ptr<MeshGeometry> processMesh(aiMesh* mesh, const aiScene* scene);
+
+	wstring loadMaterialTextures(aiMaterial* mat, aiTextureType type, const aiScene* scene);
 
 };
 

@@ -32,6 +32,7 @@ RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Common/Camera", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneMain", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneTitle", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneLoad", ".cpp");
+RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("ModelLoader/ModelLoader", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("FrameResource/FrameResource", ".cpp");
 
 #include "RuntimeLinkLibrary.h"
@@ -40,7 +41,7 @@ RUNTIME_COMPILER_LINKLIBRARY("dxgi.lib");
 RUNTIME_COMPILER_LINKLIBRARY("dxguid.lib");
 RUNTIME_COMPILER_LINKLIBRARY("DirectXTK12.lib");
 RUNTIME_COMPILER_LINKLIBRARY("d3dcompiler.lib");
-
+RUNTIME_COMPILER_LINKLIBRARY("assimp-vc142-mt.lib");
 
 
 
@@ -73,7 +74,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         g_pSys->pRCCppMainLoopI = this;
         g_pSys->pRuntimeObjectSystem->GetObjectFactorySystem()->SetObjectConstructorHistorySize(10);
         g_pSys->pRuntimeObjectSystem->AddLibraryDir("build/x64/Debug");
-        g_pSys->pRuntimeObjectSystem->AddLibraryDir("FBXSDK/Libs");
+        g_pSys->pRuntimeObjectSystem->AddLibraryDir("Assimp/Libs");
+        g_pSys->pRuntimeObjectSystem->AddIncludeDir("Assimp");
     
     }
 
@@ -192,13 +194,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         ImGui::SetCurrentContext(g_pSys->pImContext);
 
         ImGui::NewFrame();
-
-        ImGui::SetNextWindowPos(ImVec2(50, 400), ImGuiCond_Appearing);
-        ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Always);
-        ImGui::Begin("RCCppMainLoop Window");
-        ImGui::Text("You can change Window's code at runtime!");
-        ImGui::End();
-
 
         // Show compiling info
         double time = ImGui::GetTime();

@@ -24,8 +24,6 @@ public:
 	std::vector<FBXMaterialData> mMaterialData;
 
 
-
 private:
-
 	Matrix m_global_transform;
 };

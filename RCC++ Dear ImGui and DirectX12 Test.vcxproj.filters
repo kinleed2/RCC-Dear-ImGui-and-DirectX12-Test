@@ -42,6 +42,8 @@
     <ClCompile Include="TextureRender\TextureRender.cpp" />
     <ClCompile Include="TextureRender\CubeRenderTarget.cpp" />
     <ClCompile Include="ModelLoader\ModelLoader.cpp" />
+    <ClCompile Include="TextureRender\ShadowMap.cpp" />
+    <ClCompile Include="Wave\Waves.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -85,6 +87,8 @@
     <ClInclude Include="TextureRender\TextureRender.h" />
     <ClInclude Include="TextureRender\CubeRenderTarget.h" />
     <ClInclude Include="ModelLoader\ModelLoader.h" />
+    <ClInclude Include="TextureRender\ShadowMap.h" />
+    <ClInclude Include="Wave\Waves.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -110,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="build\x64\Debug\libfbxsdk.dll" />
+    <None Include="Shaders\VertexPositionNormalTexture.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Assimp\Libs\assimp-vc142-mtd.lib" />
