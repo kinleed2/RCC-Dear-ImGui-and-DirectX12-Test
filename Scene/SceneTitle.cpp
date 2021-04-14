@@ -9,6 +9,9 @@ void SceneTitle::Initialize()
 
 void SceneTitle::Update(DX::StepTimer const& timer)
 {
+   
+    
+
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
@@ -55,7 +58,7 @@ void SceneTitle::Update(DX::StepTimer const& timer)
         g_pSys->pSceneManager->ChangeScene(new SceneLoad(new SceneMain()));
     }
     ImGui::End();
-
+    
 }
 
 void SceneTitle::Render()

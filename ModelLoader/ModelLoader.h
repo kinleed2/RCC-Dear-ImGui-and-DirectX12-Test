@@ -1,9 +1,9 @@
 #pragma once
 #include "../Common/d3dUtil.h"
 
-#include "../Assimp/assimp/Importer.hpp"
-#include "../Assimp/assimp/scene.h"
-#include "../Assimp/assimp/postprocess.h"
+#include "../Include/assimp/Importer.hpp"
+#include "../Include/assimp/scene.h"
+#include "../Include/assimp/postprocess.h"
 
 
 struct ModelMaterialData

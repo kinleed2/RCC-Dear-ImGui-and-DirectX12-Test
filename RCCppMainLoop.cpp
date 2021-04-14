@@ -16,7 +16,6 @@
 #include <DirectXColors.h>
 #include <memory>
 
-
 // add imgui source dependencies
 // an alternative is to put imgui into a library and use RuntimeLinkLibrary
 #include "RuntimeSourceDependency.h"
@@ -26,14 +25,15 @@ RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("imgui/imgui_draw", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("imgui/imgui_demo", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("imgui/imgui_tables", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Common/DeviceResources", ".cpp");
-RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneManager", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Common/d3dUtil", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Common/Camera", ".cpp");
-RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneMain", ".cpp");
-RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneTitle", ".cpp");
-RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneLoad", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("ModelLoader/ModelLoader", ".cpp");
 RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("FrameResource/FrameResource", ".cpp");
+RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("TextureRender/ShadowMap", ".cpp");
+RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneManager", ".cpp");
+RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneLoad", ".cpp");
+RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneMain", ".cpp");
+RUNTIME_COMPILER_SOURCEDEPENDENCY_FILE("Scene/SceneTitle", ".cpp");
 
 #include "RuntimeLinkLibrary.h"
 RUNTIME_COMPILER_LINKLIBRARY("d3d12.lib");  
@@ -42,11 +42,6 @@ RUNTIME_COMPILER_LINKLIBRARY("dxguid.lib");
 RUNTIME_COMPILER_LINKLIBRARY("DirectXTK12.lib");
 RUNTIME_COMPILER_LINKLIBRARY("d3dcompiler.lib");
 RUNTIME_COMPILER_LINKLIBRARY("assimp-vc142-mtd.lib");
-
-
-
-
-
 // Rendering loop timer.
 DX::StepTimer                        g_timer;
 
@@ -73,9 +68,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     {
         g_pSys->pRCCppMainLoopI = this;
         g_pSys->pRuntimeObjectSystem->GetObjectFactorySystem()->SetObjectConstructorHistorySize(10);
-        g_pSys->pRuntimeObjectSystem->AddLibraryDir("build/x64/Debug");
-        g_pSys->pRuntimeObjectSystem->AddLibraryDir("Assimp/Libs");
-        g_pSys->pRuntimeObjectSystem->AddIncludeDir("Assimp");
+        g_pSys->pRuntimeObjectSystem->AddLibraryDir("Libs");
+        g_pSys->pRuntimeObjectSystem->AddIncludeDir("Include");
     
     }
 
@@ -141,6 +135,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     void Update(DX::StepTimer const& timer)
     {
         g_pSys->pSceneManager->Update(timer);
+
     }
 
     void Clear()
@@ -296,7 +291,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
             } if (ImGui::IsItemHovered()) ImGui::SetTooltip("Redo the last save.");
         }
         ImGui::End();
-
     }
 };
 

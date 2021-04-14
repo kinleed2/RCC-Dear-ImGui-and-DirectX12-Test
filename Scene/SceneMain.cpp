@@ -84,15 +84,15 @@ void SceneMain::Initialize()
         CD3DX12_DESCRIPTOR_RANGE textureSampler(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 7, 0);
 
         // Root parameter can be a table, root descriptor or root constants.
-        CD3DX12_ROOT_PARAMETER rootParameters[5];
+        CD3DX12_ROOT_PARAMETER rootParameters[6];
 
         // Perfomance TIP: Order from most frequent to least frequent.
         rootParameters[0].InitAsConstantBufferView(0);
         rootParameters[1].InitAsConstantBufferView(1);
         rootParameters[2].InitAsShaderResourceView(0, 1);
         rootParameters[3].InitAsDescriptorTable(1, &cubeAndShadow, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[3].InitAsDescriptorTable(1, &textureSRV, D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParameters[4].InitAsDescriptorTable(1, &textureSampler, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[4].InitAsDescriptorTable(1, &textureSRV, D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[5].InitAsDescriptorTable(1, &textureSampler, D3D12_SHADER_VISIBILITY_PIXEL);
 
         // A root signature is an array of root parameters.
         CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(std::size(rootParameters), rootParameters,
@@ -149,7 +149,6 @@ void SceneMain::Initialize()
             { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         };
 
-        D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 
         //
         // PSO for opaque objects.
@@ -164,15 +163,18 @@ void SceneMain::Initialize()
             CommonStates::CullNone,
             rtState);
 
-        
-        pd.CreatePipelineState(devRes->GetD3DDevice(), 
-            mRootSignature.Get(), 
+
+        pd.CreatePipelineState(devRes->GetD3DDevice(),
+            mRootSignature.Get(),
             { reinterpret_cast<BYTE*>(mShaders["VertexPositionNormalTexture_VS"]->GetBufferPointer()), mShaders["VertexPositionNormalTexture_VS"]->GetBufferSize() },
             { reinterpret_cast<BYTE*>(mShaders["VertexPositionNormalTexture_PS"]->GetBufferPointer()), mShaders["VertexPositionNormalTexture_PS"]->GetBufferSize() },
             mPSOs["VertexPositionNormalTexture"].GetAddressOf());
 
+
+
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
         ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-        opaquePsoDesc.InputLayout = VertexPositionNormalTexture::InputLayout;
+        opaquePsoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
         opaquePsoDesc.pRootSignature = mRootSignature.Get();
         opaquePsoDesc.VS =
         {
@@ -468,6 +470,7 @@ void SceneMain::Update(DX::StepTimer const& timer)
     ImGui::Text("");
     ImGui::End();
     
+
     
 }
 

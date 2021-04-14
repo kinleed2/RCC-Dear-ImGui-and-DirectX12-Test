@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FBXSDK/Include/fbxsdk.h"
+#include "../Include/FBXSDK/fbxsdk.h"
 #include "../Common/d3dUtil.h"
 
 using namespace fbxsdk;

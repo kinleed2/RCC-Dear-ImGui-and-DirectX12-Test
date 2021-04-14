@@ -80,7 +80,7 @@ int main(int, char**)
 
     g_graphicsMemory = std::make_unique<DirectX::GraphicsMemory>(g_systemTable.pDeviceResources->GetD3DDevice());
     g_systemTable.pSceneManager = std::make_unique<SceneManager>();
-    g_systemTable.pSceneManager->ChangeScene(new SceneTitle());
+    g_systemTable.pSceneManager->ChangeScene(new SceneLoad(new SceneTitle()));
 
     // Show the window
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
