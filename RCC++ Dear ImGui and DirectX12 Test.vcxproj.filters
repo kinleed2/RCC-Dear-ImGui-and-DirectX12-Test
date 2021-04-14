@@ -115,6 +115,7 @@
   <ItemGroup>
     <None Include="build\x64\Debug\libfbxsdk.dll" />
     <None Include="Shaders\VertexPositionNormalTexture.hlsl" />
+    <None Include="build\x64\Debug\assimp-vc142-mtd.dll" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Assimp\Libs\assimp-vc142-mtd.lib" />

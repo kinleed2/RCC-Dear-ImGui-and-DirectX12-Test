@@ -36,7 +36,7 @@ void SceneMain::Initialize()
     std::vector<uint16_t> indices;
 
     GeometricPrimitive::CreateBox(vertices, indices,
-        (Vector3(2,2,2)));
+        (Vector3(0,2,2)));
 
     auto boxMesh = make_unique<MeshGeometry>();
     boxMesh->Set(devRes, "box", vertices, indices);
@@ -360,6 +360,7 @@ void SceneMain::Update(DX::StepTimer const& timer)
     // Update camera
     mCamera.UpdateViewMatrix();
 
+    // Update object scale rot pos
     static float angle = 0.0f;
     angle += timer.GetElapsedSeconds();
     Matrix rot = Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(angle * 10.0f), 
@@ -370,7 +371,9 @@ void SceneMain::Update(DX::StepTimer const& timer)
     Matrix pos = Matrix::CreateTranslation(0.0f, -2.0f, 0.0f);
     mAllRitems[0]->world = rot;
     mAllRitems[1]->world = scale * pos;
-    // Update objects
+    //
+
+    // Update object buffer
     auto currObjectCB = mCurrFrameResource->ObjectCB.get();
     for (auto& e : mAllRitems)
     {
@@ -391,7 +394,7 @@ void SceneMain::Update(DX::StepTimer const& timer)
         }
     }
 
-    // Update materails
+    // Update materail buffer
     auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
     for (auto& e : mMaterials)
     {
@@ -461,6 +464,8 @@ void SceneMain::Update(DX::StepTimer const& timer)
     }
     ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
+    ImGui::Text("");
     ImGui::End();
     
     
